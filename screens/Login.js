@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 type Props = {};
-export default class SkateSessions extends Component<Props> {
+export default class Login extends Component<Props> {
   static navigationOptions = {
     title: 'Login',
     headerStyle: {
@@ -54,7 +54,7 @@ export default class SkateSessions extends Component<Props> {
   }
 
   _executeQuery = (query) => {
-    fetch('https://yourtakeout.ie/longboard_api/test.php', {
+    fetch('{{API_URL}}', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -64,7 +64,6 @@ export default class SkateSessions extends Component<Props> {
     })
     .then((response) => response.json())
     .then((responseJson) => {
-      console.log(responseJson);
       this._checkResponse(responseJson);
       return responseJson;
     })
@@ -81,7 +80,9 @@ export default class SkateSessions extends Component<Props> {
   }
 
   _saveDeviceInfo = async (deviceInfo) => {
+    console.log("Setting Values")
     try {
+      await AsyncStorage.setItem('loggedIn', "true");
       await AsyncStorage.setItem('deviceName', deviceInfo.deviceName);
       await AsyncStorage.setItem('devicePass', deviceInfo.devicePass);
     } catch (error) {
