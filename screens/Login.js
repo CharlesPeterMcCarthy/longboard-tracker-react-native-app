@@ -9,7 +9,8 @@ import {
   Button,
   ActivityIndicator,
   TouchableOpacity,
-  AsyncStorage
+  AsyncStorage,
+  BackHandler
 } from 'react-native';
 
 type Props = {};
@@ -31,6 +32,12 @@ export default class Login extends Component<Props> {
       emailInput: '',
       passwordInput: ''
     }
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      return true;
+    });
   }
 
   _onEmailTextChanged = (event) => {
@@ -80,7 +87,6 @@ export default class Login extends Component<Props> {
   }
 
   _saveDeviceInfo = async (deviceInfo) => {
-    console.log("Setting Values")
     try {
       await AsyncStorage.setItem('loggedIn', "true");
       await AsyncStorage.setItem('deviceName', deviceInfo.deviceName);

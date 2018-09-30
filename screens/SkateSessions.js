@@ -5,7 +5,8 @@ import {
   StyleSheet,
   View,
   Text,
-  AsyncStorage
+  AsyncStorage,
+  BackHandler
 } from 'react-native';
 
 type Props = {};
@@ -14,6 +15,12 @@ export default class SkateSessions extends Component<Props> {
     title: 'Skate Sessions',
     headerLeft: null
   };
+
+  componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      return true;
+    });
+  }
 
   render() {
     return (
