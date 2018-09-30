@@ -105,22 +105,16 @@ export default class Login extends Component<Props> {
     const spinner = this.state.loggingIn ? <ActivityIndicator style={styles.spinner} size='large' /> : null;
     return (
       <View style={styles.container}>
-        <TextInput
-          style={styles.input}
+        <InputField
           value={this.state.emailInput}
-          onChange={this._onEmailTextChanged}
-          underlineColorAndroid={'transparent'}
+          handler={this._onEmailTextChanged}
           placeholder='Email'
-          placeholderTextColor='#ccc'
         />
-        <TextInput
-          style={styles.input}
+        <InputField
           value={this.state.passwordInput}
-          onChange={this._onPasswordTextChanged}
-          underlineColorAndroid={'transparent'}
-          secureTextEntry={true}
+          handler={this._onPasswordTextChanged}
           placeholder='Password'
-          placeholderTextColor='#ccc'
+          secure={true}
         />
         <TouchableOpacity
           onPress={this._loginAttempt}
@@ -130,6 +124,26 @@ export default class Login extends Component<Props> {
         </TouchableOpacity>
         {spinner}
       </View>
+    );
+  }
+}
+
+class InputField extends Component<Props> {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <TextInput
+        style={styles.input}
+        value={this.props.value}
+        onChange={this.props.handler}
+        underlineColorAndroid={'transparent'}
+        placeholder={this.props.placeholder}
+        placeholderTextColor='#ccc'
+        secureTextEntry={this.props.secure}
+      />
     );
   }
 }
