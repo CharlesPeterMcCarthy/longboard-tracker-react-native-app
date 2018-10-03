@@ -34,7 +34,8 @@ export default class SkateSessions extends Component<Props> {
       gettingSessions: false,
       errorMsg: '',
       error: false,
-      sessions: []
+      sessions: [],
+      deviceName: ''
     }
   }
 
@@ -44,9 +45,17 @@ export default class SkateSessions extends Component<Props> {
     });
 
     this._getSessions();
+    this._getDeviceName();
+  }
+
+  _getDeviceName = async () => {
+    const deviceName = await AsyncStorage.getItem('deviceName');
+    this.state.deviceName = deviceName;
   }
 
   _getSessions = () => {
+    this.setState({ gettingSessions: true });
+
     fetch('{{ API_URL }}', {
       method: 'POST',
       headers: {
@@ -64,7 +73,7 @@ export default class SkateSessions extends Component<Props> {
   }
 
   _checkResponse(response) {
-    this.setState({ gettingSessions: false })
+    this.setState({ gettingSessions: false });
 
     if (response.isOk) this.setState({ sessions: response.sessions });
     else this.setState({ error: true, errorMsg: response.displayError });
@@ -83,7 +92,7 @@ export default class SkateSessions extends Component<Props> {
   }
 
   _viewSession = (index) => {
-    this.props.navigation.navigate('Session', { sessionID: this.state.sessions[index].sessionID });
+    this.props.navigation.navigate('Session', { session: this.state.sessions[index] });
   }
 
   render() {
@@ -94,10 +103,12 @@ export default class SkateSessions extends Component<Props> {
       </View>
     ) : null;
 
+
     return (
       <View style={styles.container}>
         {spinner}
         {error}
+        <Text style={styles.deviceName}><Text style={styles.deviceWord}>Device:</Text> {this.state.deviceName}</Text>
         <FlatList
           data={this.state.sessions}
           keyExtractor={this._keyExtractor}
@@ -116,10 +127,9 @@ class SessionPanel extends Component<Props> {
 
   render() {
     const item = this.props.item;
-    const timeAgo = moment(item.start).fromNow();
+    const timeAgo = moment(item.end).fromNow();
     const timeBetween = moment.duration(moment(item.end).diff(moment(item.start)));
-    const skateLength = Math.floor(timeBetween.asMinutes()) + " minutes " + (timeBetween.asSeconds() % 60) + " seconds.";
-
+    const skateLength = Math.floor(timeBetween.asMinutes()) + " minutes " + (timeBetween.asSeconds() % 60) + " seconds";
     return (
       <TouchableOpacity
         style={styles.sessionPanel}
@@ -181,5 +191,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
     color: '#FFF'
+  },
+  deviceName: {
+    fontSize: 18,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 5
+  },
+  deviceWord: {
+    fontWeight: 'normal'
   }
 })
