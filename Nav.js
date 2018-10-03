@@ -1,15 +1,18 @@
 import { createSwitchNavigator, createStackNavigator } from 'react-navigation';
 import Login from './screens/Login';
 import SkateSessions from './screens/SkateSessions';
-import SplashScreen from './screens/SplashScreen'
+import SplashScreen from './screens/SplashScreen';
+import ViewSession from './screens/ViewSession';
 
 const LoginStack = createStackNavigator({
   Login: { screen: Login },
-  Sessions: { screen: SkateSessions }
+  Sessions: { screen: SkateSessions },
+  Session: { screen: ViewSession }
 });
 
 const AuthorisedStack = createStackNavigator({
-  Sessions: { screen: SkateSessions }
+  Sessions: { screen: SkateSessions },
+  Session: { screen: ViewSession }
 });
 
 const App = createSwitchNavigator(
