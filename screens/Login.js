@@ -30,7 +30,9 @@ export default class Login extends Component<Props> {
     this.state = {
       loggingIn: false,
       emailInput: '',
-      passwordInput: ''
+      passwordInput: '',
+      error: false,
+      errorMsg: ''
     }
   }
 
@@ -61,7 +63,7 @@ export default class Login extends Component<Props> {
   }
 
   _executeQuery = (query) => {
-    fetch('{{API_URL}}', {
+    fetch('{{ API_URL }}', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -81,9 +83,11 @@ export default class Login extends Component<Props> {
 
   _checkResponse = (response) => {
     if (response.isOk) {
-      this._saveDeviceInfo(response.deviceInfo);
-      this._viewSkateSessions();
+      if (response.validLogin) this._saveDeviceInfo(response.deviceInfo);
+      else if (!response.validLogin || !response.emailExists) this.setState({ error: true, errorMsg: response.displayError });
     }
+
+    this.setState({ loggingIn: false });
   }
 
   _saveDeviceInfo = async (deviceInfo) => {
@@ -91,6 +95,9 @@ export default class Login extends Component<Props> {
       await AsyncStorage.setItem('loggedIn', "true");
       await AsyncStorage.setItem('deviceName', deviceInfo.deviceName);
       await AsyncStorage.setItem('devicePass', deviceInfo.devicePass);
+      await AsyncStorage.setItem('deviceID', `${deviceInfo.deviceID}`);
+
+      await this._viewSkateSessions();
     } catch (error) {
       console.log(error.message);
     }
@@ -103,8 +110,15 @@ export default class Login extends Component<Props> {
 
   render() {
     const spinner = this.state.loggingIn ? <ActivityIndicator style={styles.spinner} size='large' /> : null;
+    const error = this.state.error ? (
+      <View>
+        <Text style={styles.error}>{this.state.errorMsg}</Text>
+      </View>
+    ) : null;
+
     return (
       <View style={styles.container}>
+        {error}
         <InputField
           value={this.state.emailInput}
           handler={this._onEmailTextChanged}
@@ -143,6 +157,7 @@ class InputField extends Component<Props> {
         placeholder={this.props.placeholder}
         placeholderTextColor='#ccc'
         secureTextEntry={this.props.secure}
+        autoCapitalize='none'
       />
     );
   }
@@ -181,5 +196,14 @@ const styles = StyleSheet.create({
   },
   spinner: {
     marginTop: 10
+  },
+  error: {
+    color: 'white',
+    backgroundColor: 'red',
+    margin: 5,
+    marginTop: 10,
+    padding: 5,
+    textAlign: 'center',
+    fontWeight: 'bold'
   }
 })
