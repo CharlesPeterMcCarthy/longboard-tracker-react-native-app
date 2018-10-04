@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
   Button,
   FlatList,
-  TouchableOpacity
+  TouchableNativeFeedback
 } from 'react-native';
 import moment from 'moment';
 
@@ -35,7 +35,9 @@ export default class SkateSessions extends Component<Props> {
       errorMsg: '',
       error: false,
       sessions: [],
-      deviceName: ''
+      deviceID: 0,
+      deviceName: '',
+      lastSessionID: 0
     }
   }
 
@@ -44,13 +46,15 @@ export default class SkateSessions extends Component<Props> {
       return true;
     });
 
-    this._getSessions();
-    this._getDeviceName();
+    this._getDeviceInfo();
   }
 
-  _getDeviceName = async () => {
+  _getDeviceInfo = async () => {
+    const deviceID = await AsyncStorage.getItem('deviceID');
     const deviceName = await AsyncStorage.getItem('deviceName');
-    this.state.deviceName = deviceName;
+    this.setState({ deviceID, deviceName }, () => {
+      this._getSessions();
+    });
   }
 
   _getSessions = () => {
@@ -62,7 +66,10 @@ export default class SkateSessions extends Component<Props> {
         Accept: 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({})
+      body: JSON.stringify({
+        deviceID: this.state.deviceID,
+        lastSessionID: this.state.lastSessionID
+      })
     })
     .then((response) => response.json())
     .then((responseJson) => {
@@ -103,7 +110,6 @@ export default class SkateSessions extends Component<Props> {
       </View>
     ) : null;
 
-
     return (
       <View style={styles.container}>
         {spinner}
@@ -130,24 +136,25 @@ class SessionPanel extends Component<Props> {
     const timeAgo = moment(item.end).fromNow();
     const timeBetween = moment.duration(moment(item.end).diff(moment(item.start)));
     const skateLength = Math.floor(timeBetween.asMinutes()) + " minutes " + (timeBetween.asSeconds() % 60) + " seconds";
+
     return (
-      <TouchableOpacity
-        style={styles.sessionPanel}
-        onPress={this._onPress}
-      >
-        <View style={styles.sessionHeader}>
-          <View style={{flex:1}}>
-            <Text style={styles.headerText}>#{item.sessionID}</Text>
+      <TouchableNativeFeedback
+        onPress={this._onPress}>
+        <View style={styles.sessionPanel}>
+          <View style={styles.sessionHeader}>
+            <View style={{flex:1}}>
+              <Text style={styles.headerText}>#{item.sessionID}</Text>
+            </View>
+            <View style={{flex:1}}>
+              <Text style={[styles.timeAgo, styles.headerText]}>{timeAgo}</Text>
+            </View>
           </View>
-          <View style={{flex:1}}>
-            <Text style={[styles.timeAgo, styles.headerText]}>{timeAgo}</Text>
+          <View>
+            <Text style={styles.detail}>Skate Distance: {item.distance} KM</Text>
+            <Text style={styles.detail}>Skate Length: {skateLength}</Text>
           </View>
         </View>
-        <View>
-          <Text style={styles.detail}>Skate Distance: {item.distance} KM</Text>
-          <Text style={styles.detail}>Skate Length: {skateLength}</Text>
-        </View>
-      </TouchableOpacity>
+      </TouchableNativeFeedback>
     );
   }
 }
