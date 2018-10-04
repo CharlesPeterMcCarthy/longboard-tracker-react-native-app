@@ -13,17 +13,29 @@ import {
   TouchableNativeFeedback
 } from 'react-native';
 import moment from 'moment';
+import OptionsPopup from '../components/OptionsPopup';
 
 type Props = {};
 export default class SkateSessions extends Component<Props> {
-  static navigationOptions = {
-    title: 'Skate Sessions',
-    headerLeft: null,
-    headerStyle: {
-      backgroundColor: '#555'
-    },
-    headerTitleStyle: {
-      color: '#a2c2d8'
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title: 'Skate Sessions',
+      headerLeft: null,
+      headerRight: (
+        <OptionsPopup text={"More"} actions={['Logout']} onPress={(eventName, index) => {
+          if (index === 0) {
+            AsyncStorage.multiRemove(['loggedIn', 'deviceID', 'deviceName', 'devicePass'], (err) => {
+              navigation.navigate('Login')
+            });
+          }
+        }} />
+      ),
+      headerStyle: {
+        backgroundColor: '#555'
+      },
+      headerTitleStyle: {
+        color: '#a2c2d8'
+      }
     }
   };
 

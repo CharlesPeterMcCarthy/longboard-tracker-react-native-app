@@ -12,7 +12,8 @@ const LoginStack = createStackNavigator({
 
 const AuthorisedStack = createStackNavigator({
   Sessions: { screen: SkateSessions },
-  Session: { screen: ViewSession }
+  Session: { screen: ViewSession },
+  Login: { screen: Login }    // Used if the user logs out
 });
 
 const App = createSwitchNavigator(

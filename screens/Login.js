@@ -17,6 +17,7 @@ type Props = {};
 export default class Login extends Component<Props> {
   static navigationOptions = {
     title: 'Login',
+    headerLeft: null,
     headerStyle: {
       backgroundColor: '#a2c2d8'
     },
@@ -104,7 +105,7 @@ export default class Login extends Component<Props> {
   }
 
   _viewSkateSessions = () => {
-    this.setState({loggingIn: false});
+    this.setState({loggingIn: false, emailInput: '', passwordInput: ''});
     this.props.navigation.navigate('Sessions', {});
   }
 
