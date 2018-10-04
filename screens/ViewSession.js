@@ -35,8 +35,7 @@ export default class SkateSessions extends Component<Props> {
       gettingSessionInfo: false,
       errorMsg: '',
       error: false,
-      speeds: [],
-      topSpeed: 0
+      speeds: []
     }
   }
 
@@ -75,7 +74,7 @@ export default class SkateSessions extends Component<Props> {
     let topSpeed = speeds[0];
     speeds.forEach(speed => { if (speed > topSpeed) topSpeed = speed });
 
-    this.state.topSpeed = topSpeed;
+    return topSpeed;
   }
 
   render() {
@@ -89,10 +88,10 @@ export default class SkateSessions extends Component<Props> {
     const timeBetween = moment.duration(moment(session.end).diff(moment(session.start)));
     const skateLength = Math.floor(timeBetween.asMinutes()) + " minutes " + (timeBetween.asSeconds() % 60) + " seconds.";
     const timeAgo = moment(session.end).fromNow();
-    this._getTopSpeed();
+    const topSpeed = this._getTopSpeed();
 
     const sessionDetails = {
-      topSpeed: this.state.topSpeed,
+      topSpeed,
       distance: session.distance,
       start: session.start,
       end: session.end,
@@ -137,7 +136,7 @@ class SpeedGraph extends Component<Props> {
           <AreaChart
             style={styles.lineChart}
             data={ speeds }
-            contentInset={{ top: 30, bottom: 5, left: 5, right: 5 }}
+            contentInset={{ top: 30, left: 5, right: 5 }}
             curve={ shape.curveNatural }
             svg={{ fill: '#777' }}
           >
