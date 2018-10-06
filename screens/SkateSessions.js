@@ -46,6 +46,7 @@ export default class SkateSessions extends Component<Props> {
 
     this.state = {
       gettingSessions: false,
+      initialLoad: false,
       errorMsg: '',
       error: false,
       sessions: [],
@@ -102,8 +103,15 @@ export default class SkateSessions extends Component<Props> {
   _checkResponse(response) {
     this.setState({ gettingSessions: false });
 
-    if (response.isOk) this.setState({ sessions: response.sessions });
-    else this.setState({ error: true, errorMsg: response.displayError });
+    if (response.isOk && response.sessions) {
+      if (!this.state.initialLoad) {
+        this.setState({ sessions: response.sessions, lastSessionID: response.sessions[0].sessionID, initialLoad: true });
+      } else {
+        response.sessions.reverse().forEach(session => {
+          this.setState(prevState => ({ sessions: [session, ...prevState.sessions], lastSessionID: session.sessionID }));
+        })
+      }
+    } else if (!response.isOk) this.setState({ error: true, errorMsg: response.displayError });
   }
 
   _keyExtractor = (item, index) => index.toString();
