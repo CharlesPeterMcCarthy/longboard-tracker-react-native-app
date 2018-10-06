@@ -22,8 +22,10 @@ export default class SkateSessions extends Component<Props> {
       title: 'Skate Sessions',
       headerLeft: null,
       headerRight: (
-        <OptionsPopup text={"More"} actions={['Logout']} onPress={(eventName, index) => {
+        <OptionsPopup text={"More"} actions={['Refresh', 'Logout']} onPress={(eventName, index) => {
           if (index === 0) {
+            navigation.state.params.refreshSessions();
+          } else if (index === 1) {
             AsyncStorage.multiRemove(['loggedIn', 'deviceID', 'deviceName', 'devicePass'], (err) => {
               navigation.navigate('Login')
             });
@@ -51,6 +53,12 @@ export default class SkateSessions extends Component<Props> {
       deviceName: '',
       lastSessionID: 0
     }
+  }
+
+  componentDidMount() {
+    this.props.navigation.setParams({
+      refreshSessions: this._getSessions.bind(this)
+    });
   }
 
   componentWillMount() {
