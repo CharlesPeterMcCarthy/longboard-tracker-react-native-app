@@ -2,7 +2,6 @@
 
 import React, { Component } from 'react';
 import {
-  StyleSheet,
   View,
   Text,
   AsyncStorage,
@@ -12,6 +11,7 @@ import {
 import { AreaChart, Grid, YAxis, XAxis} from 'react-native-svg-charts'
 import * as shape from 'd3-shape';
 import moment from 'moment';
+import { styles } from '../styles/ViewSession';
 
 type Props = {};
 export default class SkateSessions extends Component<Props> {
@@ -46,7 +46,7 @@ export default class SkateSessions extends Component<Props> {
   _getSession = () => {
     this.setState({ gettingSessionInfo: true });
 
-    fetch('https://yourtakeout.ie/longboard_api/test3.php', {
+    fetch('{{ API_URL }}', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -175,32 +175,3 @@ class SessionDetails extends Component<Props> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  spinner: {
-    marginTop: 20
-  },
-  container: {
-    backgroundColor: '#a2c2d8',
-    flex: 1,
-    padding: 10
-  },
-  lineChart: {
-    height: 200,
-    backgroundColor: '#CCC',
-    marginTop: 5
-  },
-  title: {
-    fontSize: 18,
-    textAlign: 'center',
-    fontWeight: 'bold',
-    marginTop: 10,
-    marginBottom: 5
-  },
-  detail: {
-    backgroundColor: '#CCC',
-    padding: 6,
-    marginBottom:2,
-    borderRadius: 4
-  }
-})
